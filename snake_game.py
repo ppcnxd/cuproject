@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-เกมบันไดงู (Snakes & Ladders) ด้วย pygame
-ใช้ความรู้: function, if/else, for/while, list, tuple, dict, file, OOP
-
-วิธีรัน:   python snake_ladder.py
-ต้องติดตั้ง: pip install pygame
-
-หมายเหตุเรื่องฟอนต์ภาษาไทย:
-  - โปรแกรมจะหาฟอนต์ไทยในเครื่องให้เอง (Tahoma, Leelawadee, Thonburi ฯลฯ)
-  - ถ้าตัวหนังสือเป็นสี่เหลี่ยม ให้ใส่ไฟล์ฟอนต์ไทยชื่อ font.ttf ไว้โฟลเดอร์เดียวกับไฟล์นี้
-"""
 import array
 import math
 import os
