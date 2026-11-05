@@ -28,9 +28,11 @@ SNAKES = {27: 5, 40: 3, 43: 18, 54: 31, 66: 45, 76: 58, 89: 53, 99: 41}
 # ช่องพิเศษ
 EXTRA_ROLL = (10, 20, 36, 56, 70, 84)   # ทอยลูกเต๋าอีกรอบ
 BACK_3 = (15, 29, 48, 61, 78, 94)       # ถอยกลับ 3 ช่อง
+CARD_CELLS = (8, 23, 38, 52, 67, 87)    # ตกช่องนี้แล้วได้การ์ดเพิ่ม 1 ใบ
 
 START_HEARTS = 3
-MAX_HAND = 3
+START_CARDS = 5   # จำนวนการ์ดตอนเริ่มเกม
+MAX_HAND = 5      # ถือการ์ดได้สูงสุดกี่ใบ
 DIAG_RANGE = 4    # การ์ดต่อยแนวเฉียงใช้ได้ในระยะกี่ช่อง
 PUSH_DISTANCE = 3  # ผลักไปไกลกี่ช่อง
 
@@ -354,6 +356,8 @@ def build_board_surface():
             color = (150, 225, 150)
         elif n in BACK_3:
             color = (240, 150, 150)
+        elif n in CARD_CELLS:
+            color = (200, 170, 235)
         elif n == 100:
             color = GOLD
         pygame.draw.rect(surf, color, (x, y, CELL, CELL))
@@ -363,6 +367,8 @@ def build_board_surface():
             draw_text(surf, "ทอยอีก", 14, (30, 110, 40), x + CELL // 2, y + CELL - 12, "center")
         elif n in BACK_3:
             draw_text(surf, "ถอย 3", 14, (160, 30, 30), x + CELL // 2, y + CELL - 12, "center")
+        elif n in CARD_CELLS:
+            draw_text(surf, "+การ์ด", 14, (90, 40, 150), x + CELL // 2, y + CELL - 12, "center")
         elif n == 100:
             draw_text(surf, "จบ", 16, (120, 70, 0), x + CELL // 2, y + CELL - 14, "center")
     for low, high in LADDERS.items():
@@ -442,7 +448,8 @@ class Game:
         self.players = []
         for i in range(num_players):
             p = Player(i, "ผู้เล่น " + str(i + 1), PLAYER_COLORS[i])
-            p.cards.append(random.choice(CARD_KEYS))      # เริ่มมีการ์ด 1 ใบ
+            for _ in range(START_CARDS):                  # เริ่มมีการ์ด 5 ใบ
+                p.cards.append(random.choice(CARD_KEYS))
             self.players.append(p)
         self.direction = 1
         self.current = random.randrange(num_players)      # สุ่มคนเริ่ม
@@ -486,8 +493,6 @@ class Game:
     def start_turn(self):
         p = self.cur()
         self.extra = False
-        if len(p.cards) < MAX_HAND:
-            p.cards.append(random.choice(CARD_KEYS))      # จั่วการ์ดต้นตา
         self.phase = "CARD"
         self.add_log("ตาของ " + p.name + " (เลือกใช้การ์ดหรือข้าม)")
 
@@ -502,16 +507,16 @@ class Game:
 
     # ---------------- การ์ด ----------------
     def card_rect(self, i):
-        return pygame.Rect(PX, 316 + i * 42, 300, 36)
+        return pygame.Rect(PX, 312 + i * 33, 300, 30)
 
     def skip_rect(self):
-        return pygame.Rect(PX, 442, 300, 34)
+        return pygame.Rect(PX, 480, 200, 28)
 
     def roll_rect(self):
-        return pygame.Rect(PX, 492, 200, 54)
+        return pygame.Rect(PX, 516, 200, 44)
 
     def dice_rect(self):
-        return pygame.Rect(880, 482, 72, 72)
+        return pygame.Rect(880, 490, 70, 70)
 
     def use_card(self, i):
         p = self.cur()
@@ -638,6 +643,14 @@ class Game:
             self.extra = True
             self.sound.play("special")
             self.add_log("ช่องพิเศษ! ได้ทอยอีกรอบ")
+        elif pos in CARD_CELLS:
+            if len(p.cards) < MAX_HAND:
+                key = random.choice(CARD_KEYS)
+                p.cards.append(key)
+                self.sound.play("card")
+                self.add_log("ช่องการ์ด! ได้การ์ด " + CARDS[key]["name"])
+            else:
+                self.add_log("ช่องการ์ด! แต่การ์ดเต็มมือแล้ว")
         elif pos in BACK_3:
             for k in range(1, 4):
                 self.move_queue.append((pos - k, 0.25))
@@ -785,27 +798,27 @@ class Game:
         # การ์ดในมือ
         in_card_phase = (self.phase == "CARD")
         if in_card_phase:
-            draw_text(surf, "เลือกใช้การ์ด 1 ใบ หรือกด 'ไม่ใช้การ์ด'", 17, GOLD, PX, 290)
+            draw_text(surf, "เลือกใช้การ์ด 1 ใบ หรือกด 'ไม่ใช้การ์ด'", 16, GOLD, PX, 288)
         else:
-            draw_text(surf, "การ์ดในมือ", 17, (200, 200, 210), PX, 290)
+            draw_text(surf, "การ์ดในมือ", 16, (200, 200, 210), PX, 288)
         for i, key in enumerate(cur.cards):
             info = CARDS[key]
-            draw_button(surf, self.card_rect(i), info["name"] + " - " + info["desc"], 17,
+            draw_button(surf, self.card_rect(i), info["name"] + " - " + info["desc"], 16,
                         info["color"], in_card_phase)
         if in_card_phase:
-            draw_button(surf, self.skip_rect(), "ไม่ใช้การ์ด", 19, (80, 120, 90))
+            draw_button(surf, self.skip_rect(), "ไม่ใช้การ์ด", 18, (80, 120, 90))
 
         # ปุ่มทอยและลูกเต๋า
-        draw_button(surf, self.roll_rect(), "ทอยลูกเต๋า (Space)", 20, (220, 120, 40),
+        draw_button(surf, self.roll_rect(), "ทอยลูกเต๋า (Space)", 19, (220, 120, 40),
                     self.phase == "ROLL")
         draw_dice(surf, self.dice_rect(), self.dice)
 
         # บันทึกเหตุการณ์
-        pygame.draw.line(surf, GRAY, (PX, 566), (PX + 300, 566), 1)
+        pygame.draw.line(surf, GRAY, (PX, 568), (PX + 300, 568), 1)
         recent = self.log[-4:]
         for i, text in enumerate(recent):
             shade = 255 if i == len(recent) - 1 else 175
-            draw_text(surf, text, 16, (shade, shade, shade), PX, 573 + i * 30)
+            draw_text(surf, text, 16, (shade, shade, shade), PX, 576 + i * 28)
 
 
 # ======================================================================
