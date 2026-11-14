@@ -40,9 +40,9 @@ class App:
         cx = WIDTH // 2
         if state == "MENU":
             self.buttons = [
-                Button((cx - 150, 300, 300, 62), "เริ่มเกม", lambda: self.set_state("PLAYERS"), 30, (70, 150, 90)),
-                Button((cx - 150, 380, 300, 62), "ตั้งค่าเสียง", lambda: self.set_state("SETTINGS"), 30),
-                Button((cx - 150, 460, 300, 62), "ออกจากเกม", self.quit, 30, (180, 70, 70)),
+                Button((cx - 150, 300, 300, 62), "START", lambda: self.set_state("PLAYERS"), 30, (70, 150, 90)),
+                Button((cx - 150, 380, 300, 62), "SETTING", lambda: self.set_state("SETTINGS"), 30),
+                Button((cx - 150, 460, 300, 62), "EXIT", self.quit, 30, (180, 70, 70)),
             ]
         elif state == "PLAYERS":
             self.buttons = [
@@ -144,8 +144,8 @@ class App:
             cx = WIDTH // 2
             if self.state == "MENU":
                 draw_text(s, "บันไดงู", 90, GOLD, cx, 140, "center")
-                draw_text(s, "SNAKES & LADDERS", 30, WHITE, cx, 215, "center")
-                draw_text(s, "ใช้เมาส์คลิกเล่น  |  Space = ทอยลูกเต๋า  |  Esc = กลับเมนู", 18,
+                
+                draw_text(s, "Space = ทอยลูกเต๋า  |  Esc = กลับเมนู", 18,
                           (190, 190, 210), cx, 640, "center")
             elif self.state == "PLAYERS":
                 draw_text(s, "เลือกจำนวนผู้เล่น", 56, GOLD, cx, 150, "center")
