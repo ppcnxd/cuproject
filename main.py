@@ -46,13 +46,13 @@ class App:
             ]
         elif state == "PLAYERS":
             self.buttons = [
-                Button((cx - 150, 280, 300, 62), "2 ผู้เล่น", lambda: self.start_game(2), 30),
-                Button((cx - 150, 360, 300, 62), "3 ผู้เล่น", lambda: self.start_game(3), 30),
-                Button((cx - 150, 440, 300, 62), "4 ผู้เล่น", lambda: self.start_game(4), 30),
+                Button((cx - 150, 280, 300, 62), "2 players", lambda: self.start_game(2), 30),
+                Button((cx - 150, 360, 300, 62), "3 players", lambda: self.start_game(3), 30),
+                Button((cx - 150, 440, 300, 62), "4 players", lambda: self.start_game(4), 30),
                 Button((cx - 150, 540, 300, 56), "กลับ", lambda: self.set_state("MENU"), 26, (120, 120, 130)),
             ]
         elif state == "SETTINGS":
-            mute_text = "เสียง: ปิดอยู่ (กดเพื่อเปิด)" if self.sound.muted else "เสียง: เปิดอยู่ (กดเพื่อปิด)"
+            mute_text = "unmute" if self.sound.muted else "mute"
             self.buttons = [
                 Button((cx - 190, 300, 60, 60), "-", self.volume_down, 36),
                 Button((cx + 130, 300, 60, 60), "+", self.volume_up, 36),
@@ -144,14 +144,14 @@ class App:
             cx = WIDTH // 2
             if self.state == "MENU":
                 draw_text(s, "บันไดงู", 90, GOLD, cx, 140, "center")
-                
+                draw_text(s, "SNAKES & LADDERS", 30, WHITE, cx, 215, "center")
                 draw_text(s, "Space = ทอยลูกเต๋า  |  Esc = กลับเมนู", 18,
                           (190, 190, 210), cx, 640, "center")
             elif self.state == "PLAYERS":
                 draw_text(s, "เลือกจำนวนผู้เล่น", 56, GOLD, cx, 150, "center")
             elif self.state == "SETTINGS":
-                draw_text(s, "ตั้งค่าเสียง", 56, GOLD, cx, 150, "center")
-                draw_text(s, "ระดับเสียงเอฟเฟกต์", 26, WHITE, cx, 260, "center")
+                
+                draw_text(s, "Master volume", 26, WHITE, cx, 260, "center")
                 bar = pygame.Rect(cx - 110, 315, 220, 30)
                 pygame.draw.rect(s, (60, 64, 90), bar, border_radius=8)
                 fill = pygame.Rect(bar.x, bar.y, int(bar.w * self.sound.volume), bar.h)
