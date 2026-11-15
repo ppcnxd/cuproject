@@ -1,2 +1,0 @@
-volume=0.5
-muted=0
